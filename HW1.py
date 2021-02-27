@@ -98,3 +98,4 @@ def UCB(rewardFun, actionCount, c=2):
 
 #TODO: visualize the reward
 #git test
+#git 2nd test
