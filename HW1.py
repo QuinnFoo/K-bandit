@@ -96,4 +96,5 @@ def UCB(rewardFun, actionCount, c=2):
         yield Action, reward[Action]
 ############################## ALGORITHM PART #############################################
 
-#TODO: visualize the reward.
+#TODO: visualize the reward
+#git test
