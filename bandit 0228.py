@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+
 
 
 # %load HW1.py
@@ -18,7 +18,7 @@
 #need to install database ! pip install pandas_datareader
 
 
-# In[104]:
+
 
 
 import pandas_datareader.data as web
@@ -28,7 +28,7 @@ import sys
 import pandas_datareader as pdr
 
 
-# In[112]:
+
 
 
 import string
@@ -58,17 +58,17 @@ while len(stocks)<10:
 print(stocks)
 
 
-# In[115]:
 
 
-#reload the information of the stocks
+
+#reload the all information of the stocks
 
 stockList = web.DataReader(stocks, "yahoo", start, end)
 print(stockList.head())
 stockList.to_csv('./PandasNumpy.csv')
 
 
-# In[61]:
+
 
 
 import math
@@ -94,7 +94,7 @@ def rewardFun(action, t):
     return dailyReturn(action, t)
 
 
-# In[ ]:
+
 
 
 ############################## ALGORITHM PART #############################################
@@ -164,7 +164,7 @@ def UCB(rewardFun, actionCount, c=2):
         yield Action, reward[Action]
 
 
-# In[ ]:
+
 
 
 
