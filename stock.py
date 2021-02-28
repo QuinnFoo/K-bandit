@@ -27,3 +27,9 @@ while len(stocks) < 10:
         continue
 
 print(stocks)
+
+#reload the all information of the stocks
+
+stockList = web.DataReader(stocks, "yahoo", start, end)
+print(stockList.head())
+stockList.to_csv('./PandasNumpy.csv')
