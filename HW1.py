@@ -103,7 +103,6 @@ for i in range(t):
     traceReward1.append(r)
 
 ############################greedy decay result###################
-epsilon = 0.9
 reward = [0.0] * ActionCount
 Qta = [0.0] * ActionCount
 NumAction = [1] * ActionCount
@@ -113,7 +112,6 @@ for i in range(t):
     traceReward2.append(r)
 
 ###########################UCB result##################
-epsilon = 0.9
 reward = [0.0] * ActionCount
 Qta = [0.0] * ActionCount
 NumAction = [1] * ActionCount
