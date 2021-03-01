@@ -108,7 +108,7 @@ Qta = [0.0] * ActionCount
 NumAction = [1] * ActionCount
 
 for i in range(t):
-    r = decayEps_Greedy(t)
+    r = decayEps_Greedy(i)
     traceReward2.append(r)
 
 ###########################UCB result##################
@@ -118,5 +118,5 @@ NumAction = [1] * ActionCount
 ucbF = [0.0] * ActionCount
 
 for i in range(t):
-    r = UCB(t, c=2)
+    r = UCB(i, c=2)
     traceReward3.append(r)
