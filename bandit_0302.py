@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[201]:
-
-
 ##########################################################################################
 # Idea: K-arms are stocks.
 # Action is picking a certain stock to invest everyday.
@@ -42,8 +36,6 @@ def rewardReturn(t, stock, money=100):
     return round((shares * (closeprice - openprice)),2)
 
 
-# In[202]:
-
 
 #initialize reward,Qta,NumAction and cumulative
 #    reward:a list of reward of each action prior to next step
@@ -61,9 +53,6 @@ def initial():
     NumAction = [0] * ActionCount
     global cumulative 
     cumulative = 0
-
-
-# In[203]:
 
 
 ############################## ALGORITHM PART #############################################
@@ -88,8 +77,6 @@ def eps_Greedy(eps, step):
     return temp
 
 
-# In[204]:
-
 
 def decayEps_Greedy(step):
     #As we learn for a long time, we can make more educated decisions and explore less
@@ -112,8 +99,6 @@ def decayEps_Greedy(step):
     return temp
 
 
-# In[205]:
-
 
 def UCB(step, c=2):
     # NumAction(Nt(a)) is the times each action has been done
@@ -135,13 +120,8 @@ def UCB(step, c=2):
     return temp
 
 
-# In[206]:
-
 
 ############################## ALGORITHM PART #############################################
-
-
-# In[207]:
 
 
 ############################epsilon greedy result#################
@@ -161,9 +141,6 @@ for eps in epsilon:
         cumulativereturn_eps[epsilon.index(eps),i]=cumulative
 
 
-# In[208]:
-
-
 
 for i in range(len(epsilon)):
         plt.plot(traceReturn_eps[i,:], label='$\epsilon = %.02f$' % (epsilon[i]))
@@ -172,8 +149,6 @@ plt.ylabel('reward')
 plt.title("eps method")
 plt.legend()
 
-
-# In[219]:
 
 
 plt.figure(figsize=(30, 10))
@@ -185,8 +160,6 @@ plt.ylabel('cumulative reward')
 plt.title("epsilon greedy method")
 plt.legend()
 
-
-# In[210]:
 
 
 ############################greedy decay result###################
@@ -204,8 +177,6 @@ for i in range(stepCount):
     cumulativereturn_decayEps.append(cumulative)
 
 
-# In[211]:
-
 
 plt.plot(traceReturn_decayEps)
 plt.xlabel('steps')
@@ -213,16 +184,12 @@ plt.ylabel('reward')
 plt.title("greedy decay method")
 
 
-# In[212]:
-
 
 plt.plot(cumulativereturn_decayEps)
 plt.xlabel('steps')
 plt.ylabel('cumulative reward')
 plt.title("greedy decay method")
 
-
-# In[213]:
 
 
 ###########################UCB result##################
@@ -242,8 +209,6 @@ for i in range(stepCount):
     cumulativereturn_UCB.append(cumulative)
 
 
-# In[214]:
-
 
 plt.plot(traceReturn_UCB)
 plt.xlabel('steps')
@@ -251,7 +216,6 @@ plt.ylabel('reward')
 plt.title("UCB method")
 
 
-# In[215]:
 
 
 plt.plot(cumulativereturn_UCB)
@@ -260,7 +224,7 @@ plt.ylabel('cumulative reward')
 plt.title("UCB method")
 
 
-# In[ ]:
+
 
 
 
