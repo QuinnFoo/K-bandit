@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 
-df = pd.read_csv('K-bandit/PandasNumpy.csv', index_col=0, header=[0, 1])
+df = pd.read_csv('PandasNumpy.csv', index_col=0, header=[0, 1])
 index = df.columns.get_level_values(1)[0:10]
 
 openList = df.iloc[:, 30:40]
@@ -26,46 +26,45 @@ t = len(openList)
 
 # stock: time(date), open, close,
 def rewardReturn(t, stock, money=100):
-    open = openList[t][stock]
-    close = closeList[t][stock]
+    open = openList.iloc[t, stock]
+    close = closeList.iloc[t, stock]
     shares = money / open
-    return shares * close - money
+    return (shares * close - money)
 
 
 ############################## ALGORITHM PART #############################################
 # actionCount is the total number of action(0,1,2..)
 
 def eps_Greedy(eps, step):
-    p = np.random.rand(ActionCount)
+    p = np.random.rand()
 
     if p <= eps:
         action = np.random.choice(ActionCount)
     else:
-        action = reward.index(max(Qta))
+        action = Qta.index(max(Qta))
 
     # update
-    NumAction[action] += 1
     reward[action] += rewardReturn(step, action)
     Qta[action] += reward[action] / NumAction[action]
-
-    return reward[action]
+    NumAction[action] += 1
+    return rewardReturn(step, action)
 
 
 # make epsilon decay: epsilon=1/(1+t/actionCount)
 def decayEps_Greedy(step):
-    p = np.random.rand(ActionCount)
+    p = np.random.rand()
 
-    if p <= 1 / (1 + step / ActionCount):
+    if p <= 1 / (1 + (step+1) / ActionCount):
         action = np.random.choice(ActionCount)
     else:
-        action = reward.index(max(Qta))
+        action = Qta.index(max(Qta))
 
     # update
     NumAction[action] += 1
     reward[action] += rewardReturn(step, action)
     Qta[action] += reward[action] / NumAction[action]
 
-    return reward[action]
+    return rewardReturn(step, action)
 
 
 def UCB(step, c=2):
@@ -75,22 +74,23 @@ def UCB(step, c=2):
 
     # count ucbF for each action every step
     for j in range(ActionCount):
-        ucbF[j] = Qta[j] + c * math.sqrt(math.log(step) / NumAction[j])
+        ucbF[j] = Qta[j] + c * (math.sqrt((math.log(step+1))/ NumAction[j]))
 
         # choose the Action index whose ucbF is max
     action = ucbF.index(max(ucbF))
-    NumAction[action] += 1
+
     reward[action] += rewardReturn(step, action)
     Qta[action] += reward[action] / NumAction[action]
-
-    return reward[action]
+    NumAction[action] += 1
+    return rewardReturn(step, action)
 
 
 ############################## ALGORITHM PART #############################################
 # initialization
-traceReward1 = []
-traceReward2 = []
-traceReward3 = []
+#they are every step return
+traceReturn1 = []
+traceReturn2 = []
+traceReturn3 = []
 
 ############################epsilon greedy result#################
 epsilon = 0.9
@@ -100,7 +100,7 @@ NumAction = [1] * ActionCount
 
 for i in range(t):
     r = eps_Greedy(epsilon, i)
-    traceReward1.append(r)
+    traceReturn1.append(r)
 
 ############################greedy decay result###################
 reward = [0.0] * ActionCount
@@ -109,7 +109,7 @@ NumAction = [1] * ActionCount
 
 for i in range(t):
     r = decayEps_Greedy(i)
-    traceReward2.append(r)
+    traceReturn2.append(r)
 
 ###########################UCB result##################
 reward = [0.0] * ActionCount
@@ -119,4 +119,4 @@ ucbF = [0.0] * ActionCount
 
 for i in range(t):
     r = UCB(i, c=2)
-    traceReward3.append(r)
+    traceReturn3.append(r)
