@@ -46,13 +46,16 @@ def rewardReturn(t, stock, money=100):
 
 def initial():
     global reward 
-    reward = [0.0] * ActionCount
+    reward = np.zeros((ActionCount))
     global Qta
-    Qta = [0.0] * ActionCount
+    Qta = np.zeros((ActionCount))
     global NumAction 
-    NumAction = [0] * ActionCount
-    global cumulative 
+    NumAction = np.zeros((ActionCount))
+    global cumulative
     cumulative = 0
+    global ucbF
+    ucbF= np.zeros((ActionCount))
+
 
 
 ############################## ALGORITHM PART #############################################
@@ -65,7 +68,8 @@ def eps_Greedy(eps, step):
     if p <= eps:
         action = np.random.choice(ActionCount)
     else:
-        action = Qta.index(max(Qta))
+        action = np.random.choice(np.where(Qta == max(Qta))[0])
+        #action = Qta.index(max(Qta))
 
     # update
     temp=rewardReturn(step, action)
@@ -87,7 +91,8 @@ def decayEps_Greedy(step):
     if p <= 1 / (1 + (step+1) / ActionCount):
         action = np.random.choice(ActionCount)
     else:
-        action = Qta.index(max(Qta))
+        action = np.random.choice(np.where(Qta == max(Qta))[0])
+        #action = Qta.index(max(Qta))
 
     # update
     temp=rewardReturn(step, action)
@@ -110,7 +115,7 @@ def UCB(step, c=2):
         ucbF[j] = Qta[j] + c * (math.sqrt((math.log(step+1))/( NumAction[j]+ 1e-5)))
 
     # choose the Action index whose ucbF is max
-    action = ucbF.index(max(ucbF))
+    action = np.random.choice(np.where(ucbF == max(ucbF))[0])
 
     temp=rewardReturn(step, action)
     NumAction[action] += 1
@@ -128,38 +133,42 @@ def UCB(step, c=2):
 #initialize the reward list and set up epsilon
 #   traceReturn_eps:return of each step of epsilon greedy method
 #   cumulativereturn_eps:cumulative return of each step of epsilon greedy method
-epsilon = [0,0.1,0.5,0.8]
-traceReturn_eps = np.zeros((len(epsilon),stepCount))
-cumulativereturn_eps=np.zeros((len(epsilon),stepCount))
+runs=200
+epsilon = [0,0.1,0.5,0.8,0.9]
+traceReturn_eps = np.zeros((len(epsilon),runs,stepCount))
+cumulativereturn_eps=np.zeros((len(epsilon),runs,stepCount))
 
 for eps in epsilon:
-    initial()
-    for i in range(stepCount):
-        r = eps_Greedy(eps, i)
-        cumulative+=r
-        traceReturn_eps[epsilon.index(eps),i]=r
-        cumulativereturn_eps[epsilon.index(eps),i]=cumulative
+    for r in range(runs):
+        initial()
+        for i in range(stepCount):
+            ret = eps_Greedy(eps, i)
+            cumulative+=ret
+            traceReturn_eps[epsilon.index(eps),r,i]=ret
+            cumulativereturn_eps[epsilon.index(eps),r,i]=cumulative
 
+mean_rewards = traceReturn_eps.mean(axis=1)
+mean_cumu_rewards = cumulativereturn_eps.mean(axis=1)
 
-
+plt.figure()
 for i in range(len(epsilon)):
-        plt.plot(traceReturn_eps[i,:], label='$\epsilon = %.02f$' % (epsilon[i]))
+        plt.plot(mean_rewards[i,:], label='$\epsilon = %.02f$' % (epsilon[i]))
 plt.xlabel('steps')
-plt.ylabel('reward')
-plt.title("eps method")
+plt.ylabel('average reward')
+plt.title("eps method - 200 runs")
 plt.legend()
 
 
 
-plt.figure(figsize=(30, 10))
+plt.figure()
 
 for i in range(len(epsilon)):
-        plt.plot(cumulativereturn_eps[i,:], label='$\epsilon = %.02f$' % (epsilon[i]))
+        plt.plot(mean_cumu_rewards[i,:], label='$\epsilon = %.02f$' % (epsilon[i]))
 plt.xlabel('steps')
-plt.ylabel('cumulative reward')
-plt.title("epsilon greedy method")
+plt.ylabel('average cumulative reward')
+plt.title("epsilon greedy method - 200 runs")
 plt.legend()
-
+#
 
 
 ############################greedy decay result###################
@@ -167,25 +176,29 @@ plt.legend()
 #   traceReturn_decayEps:return of each step of greedy decay method
 #   cumulativereturn_decayEps:cumulative return of each step of greedy decay method
 initial()
-traceReturn_decayEps =[]
-cumulativereturn_decayEps=[]
+traceReturn_decayEps =np.zeros((runs,stepCount))
+cumulativereturn_decayEps=np.zeros((runs,stepCount))
 
-for i in range(stepCount):
-    r = decayEps_Greedy(i)
-    cumulative+=r
-    traceReturn_decayEps.append(r)
-    cumulativereturn_decayEps.append(cumulative)
+for r in range(runs):
+    initial()
+    for i in range(stepCount):
+        ret = decayEps_Greedy(i)
+        cumulative += ret
+        traceReturn_decayEps[r,i]=ret
+        cumulativereturn_decayEps[r,i]=cumulative
 
+mean_rewards_decay = traceReturn_decayEps.mean(axis=0)
+mean_cumu_rewards_decay = cumulativereturn_decayEps.mean(axis=0)
 
-
-plt.plot(traceReturn_decayEps)
+plt.figure()
+plt.plot(mean_rewards_decay)
 plt.xlabel('steps')
 plt.ylabel('reward')
 plt.title("greedy decay method")
 
 
-
-plt.plot(cumulativereturn_decayEps)
+plt.figure()
+plt.plot(mean_cumu_rewards_decay)
 plt.xlabel('steps')
 plt.ylabel('cumulative reward')
 plt.title("greedy decay method")
@@ -198,34 +211,32 @@ plt.title("greedy decay method")
 #   cumulativereturn_UCB:cumulative return of each step of greedy decay method
 # initialize ucbF with 0
 initial()
-ucbF = [0.0] * ActionCount
-traceReturn_UCB= []
-cumulativereturn_UCB=[]
+traceReturn_UCB= np.zeros((runs,stepCount))
+cumulativereturn_UCB= np.zeros((runs,stepCount))
 
-for i in range(stepCount):
-    r = UCB(i, c=2)
-    cumulative+=r
-    traceReturn_UCB.append(r)
-    cumulativereturn_UCB.append(cumulative)
+for r in range(runs):
+    initial()
+    for i in range(stepCount):
+        ret = UCB(i, c=2)
+        cumulative+=ret
+        traceReturn_UCB[r,i]=ret
+        cumulativereturn_UCB[r,i]=cumulative
 
+mean_rewards_ucb = traceReturn_UCB.mean(axis=0)
+mean_cumu_rewards_ucb = cumulativereturn_UCB.mean(axis=0)
 
-
-plt.plot(traceReturn_UCB)
+plt.figure()
+plt.plot(mean_rewards_ucb)
 plt.xlabel('steps')
 plt.ylabel('reward')
 plt.title("UCB method")
 
 
 
-
-plt.plot(cumulativereturn_UCB)
+plt.figure()
+plt.plot(mean_cumu_rewards_ucb)
 plt.xlabel('steps')
 plt.ylabel('cumulative reward')
 plt.title("UCB method")
-
-
-
-
-
 
 
