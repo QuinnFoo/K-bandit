@@ -128,12 +128,12 @@ def UCB(step, c=2):
 #initialize the reward list and set up epsilon
 #   traceReturn_eps:return of each step of epsilon greedy method
 #   cumulativereturn_eps:cumulative return of each step of epsilon greedy method
-initial()
 epsilon = [0,0.1,0.5,0.8]
 traceReturn_eps = np.zeros((len(epsilon),stepCount))
 cumulativereturn_eps=np.zeros((len(epsilon),stepCount))
 
 for eps in epsilon:
+    initial()
     for i in range(stepCount):
         r = eps_Greedy(eps, i)
         cumulative+=r
