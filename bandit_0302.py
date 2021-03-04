@@ -1,9 +1,9 @@
 ##########################################################################################
 # Idea: K-arms are stocks.
 # Action is picking a certain stock to invest everyday.
-# Do one action each day.Number of step is equal to time span.
-# Invest method: use $100 each day, pick one stock, buy at open, sell at close.
-# reward: daily return.
+# Do one action each day. Number of step is equal to time span.
+# pick one stock, buy at open, sell at close.
+# reward: cumulative average daily return.
 ##########################################################################################
 import math
 import numpy as np
@@ -37,7 +37,7 @@ for s in range(ActionCount):
 
 
 # buy a stock on open time and sell on close time,then have the rewardreturn
-def rewardReturn(t, stock, money=100):
+def dailyReturn(t, stock):
     openprice = openList.iloc[t, stock]
     closeprice = closeList.iloc[t, stock]
     #shares = int(money / openprice)
@@ -84,7 +84,7 @@ def eps_Greedy(eps, step):
 
 
     # update
-    reward = rewardReturn(step, action)
+    reward = dailyReturn(step, action)
     NumAction[action] += 1
     Qestimate[action] = (reward - Qestimate[action]) / NumAction[action]
     # return reward of this step
@@ -105,7 +105,7 @@ def decayEps_Greedy(step):
 
 
     # update
-    reward = rewardReturn(step, action)
+    reward = dailyReturn(step, action)
     NumAction[action] += 1
     Qestimate[action] = (reward - Qestimate[action]) / NumAction[action]
     #return reward of this step
@@ -126,7 +126,7 @@ def UCB(step, c=2):
     action = np.random.choice(np.where(ucbF == max(ucbF))[0])
 
     #true reward = rewardReturn
-    reward = rewardReturn(step,action)
+    reward = dailyReturn(step, action)
 
     #temp=rewardReturn(step, action)
     NumAction[action] += 1
@@ -170,8 +170,6 @@ mean_cumu_rewards = cumulativereturn_eps.mean(axis=1)
 # plt.title("eps method - 200 runs")
 # plt.legend()
 
-
-
 plt.figure()
 
 for i in range(len(epsilon)):
@@ -181,8 +179,6 @@ plt.ylabel('average cumulative reward')
 plt.title("epsilon greedy method - 100 runs")
 plt.legend()
 #
-
-
 ############################greedy decay result###################
 #initialize the reward list
 #   traceReturn_decayEps:return of each step of greedy decay method
@@ -208,14 +204,11 @@ mean_cumu_rewards_decay = cumulativereturn_decayEps.mean(axis=0)
 # plt.ylabel('reward')
 # plt.title("greedy decay method")
 
-
 plt.figure()
 plt.plot(mean_cumu_rewards_decay)
 plt.xlabel('steps')
 plt.ylabel('cumulative reward')
 plt.title("greedy decay method")
-
-
 
 ###########################UCB result##################
 #initialize the reward list
@@ -242,8 +235,6 @@ mean_cumu_rewards_ucb = cumulativereturn_UCB.mean(axis=0)
 # plt.xlabel('steps')
 # plt.ylabel('reward')
 # plt.title("UCB method")
-
-
 
 plt.figure()
 plt.plot(mean_cumu_rewards_ucb)
