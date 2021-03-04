@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 df = pd.read_csv('PandasNumpy.csv', index_col=0, header=[0, 1])
 index = df.columns.get_level_values(1)[0:10]
 
-openList = df.iloc[:, 30:40]
+openList = df.iloc[:, 40:50]
 openList.columns = index
 
 closeList = df.iloc[:, 10:20]
@@ -32,8 +32,9 @@ stepCount = len(openList)
 def rewardReturn(t, stock, money=100):
     openprice = openList.iloc[t, stock]
     closeprice = closeList.iloc[t, stock]
-    shares = int(money / openprice)
-    return round((shares * (closeprice - openprice)),2)
+    #shares = int(money / openprice)
+    #return round((shares * (closeprice - openprice)),2)
+    return (closeprice-openprice)/openprice
 
 
 
@@ -69,7 +70,7 @@ def eps_Greedy(eps, step):
         action = np.random.choice(ActionCount)
     else:
         action = np.random.choice(np.where(Qta == max(Qta))[0])
-        #action = Qta.index(max(Qta))
+
 
     # update
     temp=rewardReturn(step, action)
@@ -92,7 +93,7 @@ def decayEps_Greedy(step):
         action = np.random.choice(ActionCount)
     else:
         action = np.random.choice(np.where(Qta == max(Qta))[0])
-        #action = Qta.index(max(Qta))
+
 
     # update
     temp=rewardReturn(step, action)
@@ -133,7 +134,7 @@ def UCB(step, c=2):
 #initialize the reward list and set up epsilon
 #   traceReturn_eps:return of each step of epsilon greedy method
 #   cumulativereturn_eps:cumulative return of each step of epsilon greedy method
-runs=200
+runs=100
 epsilon = [0,0.1,0.5,0.8,0.9]
 traceReturn_eps = np.zeros((len(epsilon),runs,stepCount))
 cumulativereturn_eps=np.zeros((len(epsilon),runs,stepCount))
